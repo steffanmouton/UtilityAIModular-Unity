@@ -13,7 +13,7 @@ namespace StefTools
             EntityTaskAIBehaviour workerTaskAI = obj.GetComponent<EntityTaskAIBehaviour>();
             WorkerBehaviour wb = obj.GetComponent<WorkerBehaviour>();
             
-            workerTaskAI.Setup(wb);
+    //        workerTaskAI.Setup(wb);
         }
 
         // Update is called once per frame

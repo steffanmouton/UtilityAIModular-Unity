@@ -62,7 +62,7 @@ namespace StefTools
         private void ExecuteTask(TaskSystem.Task task)
         {
             Debug.Log("DoingMyTaskNow");
-            worker.MoveTo(task.targetPosition);
+//            worker.MoveTo(task.targetPosition);
         }
     }
 }
