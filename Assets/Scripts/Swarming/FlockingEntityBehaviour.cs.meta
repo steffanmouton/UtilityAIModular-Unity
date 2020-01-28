@@ -3,7 +3,13 @@ guid: 9d978fbbd1d8265459da40c529b09ba1
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - RadiusSquaredDistance: {fileID: 11400000, guid: 489c0fd4d504a2a42bd6d417146c2815,
+      type: 2}
+  - MaxVelocity: {fileID: 11400000, guid: 0a4527dbb60eddd428f60af3861ec18d, type: 2}
+  - SeparationWeight: {fileID: 11400000, guid: dd2a2d3acc7766642918afe8ce350ce8, type: 2}
+  - CohesionWeight: {fileID: 11400000, guid: b7260b6f1d1428d4eaeefb72ddff6ee4, type: 2}
+  - AlignmentWeight: {fileID: 11400000, guid: 8061a98a55550644baf5349c7f47ad88, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

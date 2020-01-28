@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Experimental.PlayerLoop;
+using Random = UnityEngine.Random;
 
 namespace Swarming
 {
     public class FlockingEntityBehaviour : MonoBehaviour
     {
         private Vector3 mVelocity = new Vector3();
-        private FlockGroupBehaviour flockGroup;
+        
+        public FlockGroupBehaviour flockGroup;
 
         public ScriptableFloat RadiusSquaredDistance;
         public ScriptableFloat MaxVelocity;
@@ -16,15 +18,20 @@ namespace Swarming
         public ScriptableFloat CohesionWeight;
         public ScriptableFloat AlignmentWeight;
         
-        private void Awake()
+        private void Start()
         {
-            flockGroup = GetComponentInParent<FlockGroupBehaviour>();
+            transform.LookAt(Random.insideUnitSphere);
+            
+            mVelocity = transform.forward;
+            mVelocity = Vector3.ClampMagnitude(mVelocity, MaxVelocity.Value);
+
+            flockGroup.AddToFlock(this);
         }
 
         private void Update()
         {
             UpdateAgentMovement();
-            
+            ReturnToFlock();
             
         }
 
@@ -32,13 +39,47 @@ namespace Swarming
         {
             mVelocity += FlockingBehaviour();
             mVelocity = Vector3.ClampMagnitude(mVelocity, MaxVelocity.Value);
+            
             transform.position += mVelocity * Time.deltaTime;
             transform.forward = mVelocity.normalized;
-            
+
             // If you want to make final adjustments, do them here.
             // TODO: Add some Avoidant/fleeing behaviour
         }
 
+        private void ReturnToFlock()
+        {
+            Vector3 pos = transform.position;
+            Vector3 flockPos = flockGroup.transform.position;
+
+            float distance = Vector3.Distance(pos, flockPos);
+            Vector3 distanceToCenter = flockPos - pos;
+            
+            // If the entity crosses the boundary set by the flocking group, reverse current velocity
+            if (flockGroup.UsesSphereBoundary)
+            {
+                if (distance > flockGroup.RadiusBoundary.Value)
+                {
+                    transform.position += distanceToCenter.normalized * .1f;
+                    mVelocity *= -1;
+                }
+            }
+            else // if not using SphereBoundary, then using RectBoundary
+            {
+                if (pos.x >= flockGroup.RectBoundaryX.Value || pos.x <= -flockGroup.RectBoundaryX.Value)
+                {
+                    mVelocity *= -1;
+                }
+                if (pos.y >= flockGroup.RectBoundaryY.Value || pos.y <= -flockGroup.RectBoundaryY.Value)
+                {
+                    mVelocity *= -1;
+                }
+                if (pos.z >= flockGroup.RectBoundaryZ.Value || pos.z <= -flockGroup.RectBoundaryZ.Value)
+                {
+                    mVelocity *= -1;
+                }
+            }
+        }
         private Vector3 FlockingBehaviour()
         {
             Vector3 cohesion = new Vector3();
