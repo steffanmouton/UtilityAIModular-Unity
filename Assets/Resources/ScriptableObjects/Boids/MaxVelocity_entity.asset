@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 730c3f7b8bee32b4ea23a04b9b165f75, type: 3}
   m_Name: MaxVelocity_entity
   m_EditorClassIdentifier: 
-  _value: 1
+  _value: 5

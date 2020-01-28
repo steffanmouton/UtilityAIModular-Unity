@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Swarming;
 using UnityEngine;
@@ -13,6 +14,8 @@ public class FlockGroupBehaviour : MonoBehaviour
     public ScriptableFloat RectBoundaryX;
     public ScriptableFloat RectBoundaryY;
     public ScriptableFloat RectBoundaryZ;
+    
+    
     
     void Awake()
     {
@@ -34,9 +37,13 @@ public class FlockGroupBehaviour : MonoBehaviour
     {
         flockMembers.Remove(entity);
     }
-    
-    
-    
-    // This allows us to modify the Resolution in editor at runtime without putting it in Update()
-    
+
+
+    private void OnDrawGizmosSelected()
+    {
+        if (!UsesSphereBoundary) return;
+        
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawWireSphere(transform.position, RadiusBoundary.Value);
+    }
 }
