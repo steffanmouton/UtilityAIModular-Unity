@@ -14,6 +14,8 @@ public class FlockGroupBehaviour : MonoBehaviour
     public ScriptableFloat RectBoundaryX;
     public ScriptableFloat RectBoundaryY;
     public ScriptableFloat RectBoundaryZ;
+
+    public ScriptableFloat BoundaryReboundForce;
     
     
     

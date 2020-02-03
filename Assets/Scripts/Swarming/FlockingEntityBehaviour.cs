@@ -5,64 +5,198 @@ using Random = UnityEngine.Random;
 
 namespace Swarming
 {
+    [SelectionBase]
     [RequireComponent(typeof(Rigidbody))]
     public class FlockingEntityBehaviour : MonoBehaviour
     {
         private Vector3 mVelocity = new Vector3();
+        private Rigidbody rb;
         
+        [Header("Agent Behaviour Toggles")]
+        public bool agentFlocks;
+        public bool agentSeeks;
+        public bool agentFlees;
+        public bool agentArrives;
+        public bool agentWanders;
         
+        [Header("General Movement Settings")]
+        public ScriptableFloat MaxSpeed;
+        public ScriptableFloat InitialSpeed;
+        
+        [Header("Flocking References & Values")]
         public FlockGroupBehaviour flockGroup;
-
         public ScriptableFloat RadiusSquaredDistance;
-        public ScriptableFloat MaxVelocity;
         public ScriptableFloat SeparationWeight;
         public ScriptableFloat CohesionWeight;
         public ScriptableFloat AlignmentWeight;
         
+        [Header("Arrival Values")]
+        public ScriptableFloat ArrivalDistance;
+        
+        [Header("Wander Values")]
+        public ScriptableFloat WanderDisplacerDistance;
+        public ScriptableFloat WanderDisplacerRadius;
+        public ScriptableFloat WanderInterval;
+        
+        [Header("Final Behaviour Weighting (1 is 100%)")]
+        public ScriptableFloat FleeWeight;
+        public ScriptableFloat SeekWeight;
+        public ScriptableFloat WanderWeight;
+        public ScriptableFloat FlockTotalWeight;
+        
+        
+        
+        [Header("Seek & Flee References")]
+        public GameObject seekTarget;
+        public GameObject fleeTarget;
+
+        
+        private Vector3 wanderTarget;
+        private float wanderTimer;
+        
         private void Start()
         {
-
-            transform.LookAt(Random.insideUnitSphere);
+            wanderTimer = 0;
             
-            mVelocity = Vector3.ClampMagnitude(mVelocity, MaxVelocity.Value);
-
+            rb = GetComponent<Rigidbody>();
+            
+            transform.LookAt(Random.insideUnitSphere);
+            wanderTarget = transform.position + transform.forward * WanderDisplacerDistance.Value;
+            
+            rb.AddForce(Vector3.forward * InitialSpeed.Value);
+            
+            if (!flockGroup)
+                return;
+            
             flockGroup.AddToFlock(this);
         }
 
         private void Update()
         {
+            // Calculate all the forces to apply to the agent, then apply them.
             UpdateAgentMovement();
-            ReturnToFlock();
+            
+            // Sets the boundary for the flock. Comment this out if you want completely free movement.
+            if(agentFlocks)
+                ReturnToFlock();
+            
+            if (rb.velocity != Vector3.zero)
+                transform.rotation = Quaternion.LookRotation(rb.velocity);
+            
+            rb.velocity = Vector3.ClampMagnitude(rb.velocity, MaxSpeed.Value);
+        }
+
+        /// <summary>
+        /// Checks to see what behaviours are set to true, then calculates forces from those active behaviours.
+        /// Adds forces to the rigidbody, weighted. Each force is already normalized and clamped.
+        /// </summary>
+        private void UpdateAgentMovement()
+        {
+            if (agentSeeks)
+                rb.AddForce(Seek(seekTarget) * SeekWeight.Value);
+            
+            if (agentFlees)
+                rb.AddForce(Flee(fleeTarget) * FleeWeight.Value);
+            
+            if (agentWanders)
+                rb.AddForce(Wander() * WanderWeight.Value);
+            
+            if (agentFlocks)
+                rb.AddForce(FlockingBehaviour() * FlockTotalWeight.Value);
             
         }
 
-        private void UpdateAgentMovement()
+        private Vector3 Seek(GameObject t)
         {
-            mVelocity += FlockingBehaviour();
-            mVelocity = Vector3.ClampMagnitude(mVelocity, MaxVelocity.Value);
+            if (!t)
+                return Vector3.zero;
             
-            transform.position += mVelocity * Time.deltaTime;
-            transform.forward = mVelocity.normalized;
+            Vector3 desiredVel = t.transform.position - transform.position;
+            
+            desiredVel.Normalize();
+            desiredVel *= MaxSpeed.Value;
+            
+            if (agentArrives)
+            {
+                float distanceToTarget = Vector3.Magnitude(t.transform.position - transform.position);
+                desiredVel *= (distanceToTarget / ArrivalDistance.Value);
+            }
+            
+            Vector3 steering = desiredVel - rb.velocity;
 
-            // If you want to make final adjustments, do them here.
-            // TODO: Add some Avoidant/fleeing behaviour
+            steering = Vector3.ClampMagnitude(steering, MaxSpeed.Value);
+
+            return steering;
+        }
+        
+        private Vector3 Seek(Vector3 t)
+        {
+            Vector3 desiredVel = t - transform.position;
+            
+            desiredVel.Normalize();
+            desiredVel *= MaxSpeed.Value;
+            
+            if (agentArrives)
+            {
+                float distanceToTarget = Vector3.Magnitude(t - transform.position);
+                desiredVel *= (distanceToTarget / ArrivalDistance.Value);
+            }
+            
+            Vector3 steering = desiredVel - rb.velocity;
+
+            steering = Vector3.ClampMagnitude(steering, MaxSpeed.Value);
+            
+            return steering;
+        }
+        
+        private Vector3 Flee(GameObject t)
+        {
+            Vector3 steering = Seek(t);
+            return -steering;
+        }
+
+        private Vector3 Arrive(Vector3 t)
+        {
+            return Vector3.zero;
+        }
+
+        private Vector3 Wander()
+        {
+            wanderTimer += Time.deltaTime;
+            
+            if (wanderTimer < WanderInterval.Value)
+                return Seek(wanderTarget);
+            
+            wanderTimer = 0;
+            
+            Vector3 displacerPosition;
+            displacerPosition = transform.position + transform.forward * WanderDisplacerDistance.Value;
+            
+            wanderTarget = displacerPosition + Random.insideUnitSphere * WanderDisplacerRadius.Value;
+            
+            return Seek(wanderTarget);
         }
 
         private void ReturnToFlock()
         {
+            if (!flockGroup)
+                return;
+            
             Vector3 pos = transform.position;
             Vector3 flockPos = flockGroup.transform.position;
 
             float distance = Vector3.Distance(pos, flockPos);
-            Vector3 distanceToCenter = flockPos - pos;
+            Vector3 vecToCenter = flockPos - pos;
             
             // If the entity crosses the boundary set by the flocking group, reverse current velocity
             if (flockGroup.UsesSphereBoundary)
             {
                 if (distance > flockGroup.RadiusBoundary.Value)
                 {
-                    transform.position += distanceToCenter.normalized * .1f;
-                    mVelocity *= -1;
+                    transform.LookAt(flockPos);
+                    Vector3 steering = transform.forward * flockGroup.BoundaryReboundForce.Value;
+                    //Vector3.ClampMagnitude(steering, rb.velocity.magnitude);
+                    rb.AddForce(steering);
                 }
             }
             else // if not using SphereBoundary, then using RectBoundary
@@ -81,6 +215,7 @@ namespace Swarming
                 }
             }
         }
+        
         private Vector3 FlockingBehaviour()
         {
             Vector3 cohesion = new Vector3();
@@ -131,6 +266,16 @@ namespace Swarming
             );
 
             return finalFlockingVector;
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            
+            Gizmos.color = Color.yellow;
+
+            if (!rb)
+                return;
+            Gizmos.DrawRay(transform.position, rb.velocity);
         }
     }
 }
