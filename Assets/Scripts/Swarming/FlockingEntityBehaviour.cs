@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
 using Random = UnityEngine.Random;
 
 namespace Swarming
 {
+    [RequireComponent(typeof(Rigidbody))]
     public class FlockingEntityBehaviour : MonoBehaviour
     {
         private Vector3 mVelocity = new Vector3();
+        
         
         public FlockGroupBehaviour flockGroup;
 
@@ -20,9 +21,9 @@ namespace Swarming
         
         private void Start()
         {
+
             transform.LookAt(Random.insideUnitSphere);
             
-            mVelocity = transform.forward;
             mVelocity = Vector3.ClampMagnitude(mVelocity, MaxVelocity.Value);
 
             flockGroup.AddToFlock(this);
