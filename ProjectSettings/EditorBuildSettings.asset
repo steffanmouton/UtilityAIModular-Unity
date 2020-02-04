@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/ModularFlockingAI/Scenes/Fishoids Flocking Demo.unity
+    guid: 62a8c27e360887845ad944675288c33e
   m_configObjects: {}
