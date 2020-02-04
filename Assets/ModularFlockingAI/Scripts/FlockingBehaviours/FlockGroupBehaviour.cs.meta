@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 0b24e8bb973321b49be8f0ae6f87d3cd
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - RadiusBoundary: {fileID: 11400000, guid: ff002e96641a7724289f9ec36be691e5, type: 2}
+  - RectBoundaryX: {fileID: 11400000, guid: 71246642904ac5b4c9a81527e7b4114d, type: 2}
+  - RectBoundaryY: {fileID: 11400000, guid: 9d2e9e152e368234abe7c4c515c7c7c7, type: 2}
+  - RectBoundaryZ: {fileID: 11400000, guid: a1a61d19262359948af20f2961703896, type: 2}
+  - BoundaryReboundForce: {fileID: 11400000, guid: 13f75224b83e66d4b95e25c5c3a66bec,
+      type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

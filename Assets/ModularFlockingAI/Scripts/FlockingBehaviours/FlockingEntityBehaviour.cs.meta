@@ -1,0 +1,32 @@
+fileFormatVersion: 2
+guid: 9d978fbbd1d8265459da40c529b09ba1
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - flockGroup: {instanceID: 0}
+  - RadiusSquaredDistance: {fileID: 11400000, guid: 489c0fd4d504a2a42bd6d417146c2815,
+      type: 2}
+  - MaxSpeed: {fileID: 11400000, guid: 52195d371e6a4cd4ab7e5c2ac07ec6d3, type: 2}
+  - MaxForce: {fileID: 11400000, guid: d3780482a6ab02d48aed9592f3ab78b1, type: 2}
+  - SeparationWeight: {fileID: 11400000, guid: dd2a2d3acc7766642918afe8ce350ce8, type: 2}
+  - CohesionWeight: {fileID: 11400000, guid: b7260b6f1d1428d4eaeefb72ddff6ee4, type: 2}
+  - AlignmentWeight: {fileID: 11400000, guid: 8061a98a55550644baf5349c7f47ad88, type: 2}
+  - ArrivalDistance: {fileID: 11400000, guid: 60e86f26577372d43b8f4bc95ac2fa5e, type: 2}
+  - WanderDisplacerDistance: {fileID: 11400000, guid: 4ea6c62e7b792114494c78080ac5c843,
+      type: 2}
+  - WanderDisplacerRadius: {fileID: 11400000, guid: adcb22366f0a64c41b8198459c9683f3,
+      type: 2}
+  - InitialSpeed: {fileID: 11400000, guid: 238f9218e5f5bb0428efe10b5f188033, type: 2}
+  - WanderInterval: {fileID: 11400000, guid: a767a144cff404c4294ca4fad6c33cdf, type: 2}
+  - FleeWeight: {fileID: 11400000, guid: 7a69a4deea0476146b1a873740f534fd, type: 2}
+  - SeekWeight: {fileID: 11400000, guid: 0a1822d7d38feaa499eede1a0b59ba8d, type: 2}
+  - WanderWeight: {fileID: 11400000, guid: 7ac6c7b82e1a63b4ba13ba9fc38ae1cc, type: 2}
+  - FlockTotalWeight: {fileID: 11400000, guid: 9706e399e28438d46914814395e3e2b6, type: 2}
+  - seekTarget: {instanceID: 0}
+  - fleeTarget: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
