@@ -56,18 +56,23 @@ namespace Swarming
         
         private void Start()
         {
-            wanderTimer = 0;
             
+            
+            // Get reference to Rigidbody. Apply a starting force.
             rb = GetComponent<Rigidbody>();
-            
-            transform.LookAt(Random.insideUnitSphere);
-            wanderTarget = transform.position + transform.forward * WanderDisplacerDistance.Value;
-            
             rb.AddForce(Vector3.forward * InitialSpeed.Value);
             
+            // Randomize starting rotation.
+            transform.LookAt(Random.insideUnitSphere);
+            
+            // Initialize the Wander Timer. Set a wander target in case entity is set to wander.
+            wanderTimer = 0;
+            wanderTarget = transform.position + transform.forward * WanderDisplacerDistance.Value;
+            
+            
+            // If there is a referenced Flock Group, then add this object to the flock group's list of entities.
             if (!flockGroup)
                 return;
-            
             flockGroup.AddToFlock(this);
         }
 
@@ -80,9 +85,11 @@ namespace Swarming
             if(agentFlocks)
                 ReturnToFlock();
             
+            // If the object is moving, set its forward to face direction of movement.
             if (rb.velocity != Vector3.zero)
                 transform.rotation = Quaternion.LookRotation(rb.velocity);
             
+            // Controls the maximum speed of the entity.
             rb.velocity = Vector3.ClampMagnitude(rb.velocity, MaxSpeed.Value);
         }
 
@@ -103,9 +110,14 @@ namespace Swarming
             
             if (agentFlocks)
                 rb.AddForce(FlockingBehaviour() * FlockTotalWeight.Value);
-            
-        }
 
+        }
+        
+        /// <summary>
+        /// Steering behaviour. Calculates and returns a Vec3 for the force needed to seek a target.
+        /// </summary>
+        /// <param name="t">GameObject that is to be sought.</param>
+        /// <returns>Vector3 of force to apply to the Rigidbody.</returns>
         private Vector3 Seek(GameObject t)
         {
             if (!t)
@@ -129,6 +141,11 @@ namespace Swarming
             return steering;
         }
         
+        /// <summary>
+        /// Steering behaviour. Calculates and returns a Vec3 for the force needed to seek a target.
+        /// </summary>
+        /// <param name="t">Vector3 position to be sought.</param>
+        /// <returns>Vector3 of force to apply to the Rigidbody.</returns>
         private Vector3 Seek(Vector3 t)
         {
             Vector3 desiredVel = t - transform.position;
@@ -149,17 +166,21 @@ namespace Swarming
             return steering;
         }
         
+        /// <summary>
+        /// Steering behaviour. Calculates and returns a Vec3 for the force needed to flee a target.
+        /// </summary>
+        /// <param name="t">Gameobject from which to flee.</param>
+        /// <returns>Vector3 of force to apply to the Rigidbody.</returns>
         private Vector3 Flee(GameObject t)
         {
             Vector3 steering = Seek(t);
             return -steering;
         }
-
-        private Vector3 Arrive(Vector3 t)
-        {
-            return Vector3.zero;
-        }
-
+        
+        /// <summary>
+        /// Steering Behaviour. Calculates a random position to Seek ahead of this object.
+        /// </summary>
+        /// <returns>Vector3 of force to apply to the Rigidbody.</returns>
         private Vector3 Wander()
         {
             wanderTimer += Time.deltaTime;
@@ -176,7 +197,10 @@ namespace Swarming
             
             return Seek(wanderTarget);
         }
-
+        
+        /// <summary>
+        /// Forces the gameobject to adhere to the boundary defined by its referenced flockgroup.
+        /// </summary>
         private void ReturnToFlock()
         {
             if (!flockGroup)
@@ -216,6 +240,11 @@ namespace Swarming
             }
         }
         
+        /// <summary>
+        /// Steering Behaviour. Views position and velocity of nearby objects in the same flock. Calculates movements
+        /// for this gameobject to simulate flocking patterns based on weight values.
+        /// </summary>
+        /// <returns>Vector3 of force to apply to the Rigidbody.</returns>
         private Vector3 FlockingBehaviour()
         {
             Vector3 cohesion = new Vector3();
@@ -267,12 +296,12 @@ namespace Swarming
 
             return finalFlockingVector;
         }
-
+        
         private void OnDrawGizmosSelected()
         {
-            
             Gizmos.color = Color.yellow;
-
+            
+            // Draws a ray to reflect current velocity.
             if (!rb)
                 return;
             Gizmos.DrawRay(transform.position, rb.velocity);

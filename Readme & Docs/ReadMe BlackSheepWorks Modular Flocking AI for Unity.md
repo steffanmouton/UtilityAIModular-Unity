@@ -4,7 +4,7 @@
 
 1. From inside your Unity project, click Assets > Import Package > Custom Package. Select the ModularFlockingAI.unitypackage.
 
-![ImportCustomPackage](URL HERE)
+![ImportCustomPackage](https://raw.githubusercontent.com/steffanmouton/UtilityAIModular-Unity/master/Readme%20%26%20Docs/ImportCustomPackagev2.jpg)
 
 2. Accept all the files and click Import. The only one you can choose to not include is the demo scene, but this is not recommended. It is useful for understanding what the different behaviour weights do.
 
